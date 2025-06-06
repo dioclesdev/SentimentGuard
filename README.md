@@ -9,8 +9,6 @@
 
 Eine **state-of-the-art Flask-Webanwendung** für KI-gestützte Sentiment-Analyse mit **Multi-Engine-Verarbeitung**, **SQLite-Datenbank**, **Volltext-Suche** und **4-Sprachen-Support**. Kombiniert VADER, BERT und TextBlob für höchste Genauigkeit bei der Emotionserkennung in Texten.
 
-![SentimentGuard Interface](https://via.placeholder.com/800x400/667eea/ffffff?text=SentimentGuard+AI+Sentiment+Analysis)
-
 ## 📋 Überblick
 
 **SentimentGuard** ist eine umfassende Lösung für die Analyse emotionaler Stimmungen in Texten. Das System nutzt drei verschiedene AI-Engines und speichert alle Analysen in einer durchsuchbaren Datenbank mit erweiterten Suchfunktionen.
