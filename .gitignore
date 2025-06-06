@@ -1,0 +1,23 @@
+# SentimentGuard .gitignore
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.db
+*.sqlite
+sentiment_database.db
+.env
+.DS_Store
+node_modules/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+.vscode/settings.json
+models/
+.transformers_cache/
+*.log

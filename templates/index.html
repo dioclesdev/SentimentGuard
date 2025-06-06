@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ get_text('title') }}</title>
+    <style>
+        :root {
+            /* Light Theme */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.95);
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #2c3e50;
+            --text-secondary: #666;
+            --border-color: #e0e6ed;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --accent: #667eea;
+            --positive: #27ae60;
+            --negative: #e74c3c;
+            --neutral: #95a5a6;
+            --mixed: #f39c12;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme */
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-secondary: rgba(30, 30, 50, 0.95);
+            --bg-tertiary: #2a2a3e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404060;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --accent: #7b68ee;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px var(--shadow);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--text-primary) 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn, .theme-btn, .mode-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .lang-btn:hover, .theme-btn:hover, .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .main-content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .left-panel, .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .input-section {
+            background: var(--bg-tertiary);
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .analyze-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .analyze-btn, .save-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .analyze-btn:hover, .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn:active, .save-btn:active {
+            transform: translateY(0);
+        }
+
+        .analyze-btn:disabled, .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--positive) 0%, #2ecc71 100%);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .bert-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: var(--border-color);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(25px);
+        }
+
+        .results-section {
+            background: var(--bg-tertiary);
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .results-header h2 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .sentiment-display {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .sentiment-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            flex-direction: column;
+        }
+
+        .sentiment-circle.positive {
+            background: linear-gradient(135deg, var(--positive), #2ecc71);
+        }
+
+        .sentiment-circle.negative {
+            background: linear-gradient(135deg, var(--negative), #c0392b);
+        }
+
+        .sentiment-circle.neutral {
+            background: linear-gradient(135deg, var(--neutral), #7f8c8d);
+        }
+
+        .sentiment-circle.mixed {
+            background: linear-gradient(135deg, var(--mixed), #e67e22);
+        }
+
+        .score-text {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .score-emoji {
+            font-size: 2rem;
+        }
+
+        .classification {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .classification.positive { color: var(--positive); }
+        .classification.negative { color: var(--negative); }
+        .classification.neutral { color: var(--neutral); }
+        .classification.mixed { color: var(--mixed); }
+
+        .confidence-display {
+            text-align: center;
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--negative) 0%, var(--mixed) 50%, var(--positive) 100%);
+            transition: width 0.3s ease;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px var(--shadow);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .detail-item {
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .search-section {
+            background: var(--bg-tertiary);
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-result-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-text {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            line-height: 1.4;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .result-sentiment {
+            padding: 4px 8px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .result-sentiment.positive {
+            background: var(--positive);
+        }
+
+        .result-sentiment.negative {
+            background: var(--negative);
+        }
+
+        .result-sentiment.neutral {
+            background: var(--neutral);
+        }
+
+        .result-sentiment.mixed {
+            background: var(--mixed);
+        }
+
+        .example-texts {
+            margin-top: 20px;
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .example-texts h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .example-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .example-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .advanced-scores {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .advanced-scores h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .score-item-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .score-item-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .methods-used {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .methods-used h5 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .method-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .method-tag {
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .details-grid, .score-breakdown {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .header-controls {
+                position: static;
+                justify-content: center;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .analyze-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-controls {
+                flex-direction: column;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .details-grid, .score-breakdown {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-controls {
+                gap: 8px;
+            }
+            
+            .lang-btn, .theme-btn, .mode-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <div class="header">
+            <div class="header-controls">
+                <div class="language-switcher">
+                    <a href="/set_language/de" class="lang-btn {% if lang == 'de' %}active{% endif %}">🇩🇪 DE</a>
+                    <a href="/set_language/en" class="lang-btn {% if lang == 'en' %}active{% endif %}">🇺🇸 EN</a>
+                    <a href="/set_language/fr" class="lang-btn {% if lang == 'fr' %}active{% endif %}">🇫🇷 FR</a>
+                    <a href="/set_language/es" class="lang-btn {% if lang == 'es' %}active{% endif %}">🇪🇸 ES</a>
+                </div>
+                <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+            </div>
+            <h1>💭 SentimentGuard</h1>
+            <p>{{ get_text('subtitle') }}</p>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalAnalyses">{{ stats.get('total_analyses', 0) }}</div>
+                    <div class="stat-label">{{ get_text('total_analyses') }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgSentiment">{{ "%.1f"|format(stats.get('average_sentiment', 0.5) * 100) }}%</div>
+                    <div class="stat-label">Ø {{ get_text('sentiment_score') }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="positivePct">
+                        {% set total_count = stats.get('total_analyses', 0) %}
+                        {% if total_count > 0 %}
+                            {{ "%.0f"|format((stats.get('sentiment_distribution', {}).get('positive', 0) / total_count) * 100) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">{{ get_text('sentiment_positive') }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ get_text('database_status') }}</div>
+                    <div class="stat-label">✅ Online</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="textInput">{{ get_text('analyze_text') }}</label>
+                        <textarea 
+                            id="textInput" 
+                            placeholder="{{ get_text('placeholder') }}"
+                            maxlength="5000"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="analyze-controls">
+                        <button id="analyzeBtn" class="analyze-btn">
+                            💭 {{ get_text('analyze_btn') }}
+                        </button>
+                        
+                        <button id="saveBtn" class="save-btn" style="display: none;">
+                            💾 {{ get_text('save_analysis') }}
+                        </button>
+                        
+                        <div class="bert-toggle">
+                            <span>BERT</span>
+                            <div class="toggle-switch active" id="bertToggle">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="example-texts">
+                        <h3>{{ get_text('examples_title') }}</h3>
+                        <button class="example-btn" onclick="loadExample('positive')">
+                            😊 {{ get_text('positive_example') }}
+                        </button>
+                        <button class="example-btn" onclick="loadExample('negative')">
+                            😞 {{ get_text('negative_example') }}
+                        </button>
+                        <button class="example-btn" onclick="loadExample('neutral')">
+                            😐 {{ get_text('neutral_example') }}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-section">
+                    <h2>🔍 {{ get_text('search_title') }}</h2>
+                    <div class="search-controls">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-input"
+                            placeholder="{{ get_text('search_placeholder') }}"
+                        >
+                        <button id="searchBtn" class="search-btn">
+                            🔍 {{ get_text('search_btn') }}
+                        </button>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+                        {{ get_text('search_hint') }}
+                    </p>
+                    
+                    <div id="searchResults" class="search-results" style="display: none;">
+                        <!-- Search results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="results-section">
+                    <div class="results-header">
+                        <h2>📈 {{ get_text('results_title') }}</h2>
+                    </div>
+
+                    <div id="loading" class="loading">
+                        <div class="spinner"></div>
+                        <p>{{ get_text('loading') }}</p>
+                    </div>
+
+                    <div id="results" style="display: none;">
+                        <div class="sentiment-display">
+                            <div id="sentimentCircle" class="sentiment-circle">
+                                <div class="score-text" id="scoreText">--%</div>
+                                <div class="score-emoji" id="scoreEmoji">🤔</div>
+                            </div>
+                            <div id="classification" class="classification">{{ get_text('no_analysis') }}</div>
+                            
+                            <div class="confidence-display">
+                                <div class="detail-label">{{ get_text('confidence') }}</div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                                </div>
+                                <div id="confidenceText">--</div>
+                            </div>
+                        </div>
+
+                        <div class="advanced-scores" id="advancedScores">
+                            <h4>📊 Detaillierte Scores</h4>
+                            <div class="score-breakdown">
+                                <div class="score-item">
+                                    <div class="score-item-label">Positiv</div>
+                                    <div class="score-item-value" id="positiveScore">--%</div>
+                                </div>
+                                <div class="score-item">
+                                    <div class="score-item-label">Negativ</div>
+                                    <div class="score-item-value" id="negativeScore">--%</div>
+                                </div>
+                                <div class="score-item">
+                                    <div class="score-item-label">Neutral</div>
+                                    <div class="score-item-value" id="neutralScore">--%</div>
+                                </div>
+                                <div class="score-item">
+                                    <div class="score-item-label">Compound</div>
+                                    <div class="score-item-value" id="compoundScore">--%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="methods-used">
+                                <h5>🔬 Verwendete Methoden</h5>
+                                <div class="method-tags" id="methodTags">
+                                    <!-- Method tags will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">{{ get_text('words') }}</div>
+                                <div id="wordCount" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">{{ get_text('sentences') }}</div>
+                                <div id="sentenceCount" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">{{ get_text('characters') }}</div>
+                                <div id="charCount" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">{{ get_text('processing_time') }}</div>
+                                <div id="processingTime" class="detail-value">-- ms</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lokalisierte Texte für JavaScript
+        const TRANSLATIONS = {
+            {% if lang == 'de' %}
+            sentiment_positive: "{{ get_text('sentiment_positive') }}",
+            sentiment_negative: "{{ get_text('sentiment_negative') }}",
+            sentiment_neutral: "{{ get_text('sentiment_neutral') }}",
+            sentiment_mixed: "{{ get_text('sentiment_mixed') }}",
+            saved_successfully: "{{ get_text('saved_successfully') }}",
+            search_results: "{{ get_text('search_results') }}",
+            no_results: "{{ get_text('no_results') }}"
+            {% elif lang == 'en' %}
+            sentiment_positive: "{{ get_text('sentiment_positive') }}",
+            sentiment_negative: "{{ get_text('sentiment_negative') }}",
+            sentiment_neutral: "{{ get_text('sentiment_neutral') }}",
+            sentiment_mixed: "{{ get_text('sentiment_mixed') }}",
+            saved_successfully: "{{ get_text('saved_successfully') }}",
+            search_results: "{{ get_text('search_results') }}",
+            no_results: "{{ get_text('no_results') }}"
+            {% elif lang == 'fr' %}
+            sentiment_positive: "{{ get_text('sentiment_positive') }}",
+            sentiment_negative: "{{ get_text('sentiment_negative') }}",
+            sentiment_neutral: "{{ get_text('sentiment_neutral') }}",
+            sentiment_mixed: "{{ get_text('sentiment_mixed') }}",
+            saved_successfully: "{{ get_text('saved_successfully') }}",
+            search_results: "{{ get_text('search_results') }}",
+            no_results: "{{ get_text('no_results') }}"
+            {% else %}
+            sentiment_positive: "{{ get_text('sentiment_positive') }}",
+            sentiment_negative: "{{ get_text('sentiment_negative') }}",
+            sentiment_neutral: "{{ get_text('sentiment_neutral') }}",
+            sentiment_mixed: "{{ get_text('sentiment_mixed') }}",
+            saved_successfully: "{{ get_text('saved_successfully') }}",
+            search_results: "{{ get_text('search_results') }}",
+            no_results: "{{ get_text('no_results') }}"
+            {% endif %}
+        };
+
+        // DOM Elemente
+        const textInput = document.getElementById('textInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const sentimentCircle = document.getElementById('sentimentCircle');
+        const scoreText = document.getElementById('scoreText');
+        const scoreEmoji = document.getElementById('scoreEmoji');
+        const classification = document.getElementById('classification');
+        const bertToggle = document.getElementById('bertToggle');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchResults = document.getElementById('searchResults');
+
+        // State
+        let useBert = true;
+        let darkMode = false;
+        let currentAnalysis = null;
+
+        // Event Listeners
+        analyzeBtn.addEventListener('click', analyzeSentiment);
+        saveBtn.addEventListener('click', saveAnalysis);
+        searchBtn.addEventListener('click', searchTexts);
+        
+        textInput.addEventListener('input', function() {
+            analyzeBtn.disabled = this.value.length === 0;
+            saveBtn.style.display = 'none';
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchTexts();
+            }
+        });
+
+        bertToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            useBert = this.classList.contains('active');
+        });
+
+        // Theme Control
+        function toggleTheme() {
+            darkMode = !darkMode;
+            document.body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+            
+            const themeBtn = document.querySelector('.theme-btn');
+            themeBtn.textContent = darkMode ? '☀️' : '🌙';
+            
+            localStorage.setItem('darkMode', darkMode);
+        }
+
+        // Load saved preferences
+        function loadPreferences() {
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (savedDarkMode) {
+                darkMode = true;
+                document.body.setAttribute('data-theme', 'dark');
+                document.querySelector('.theme-btn').textContent = '☀️';
+            }
+        }
+
+        // Beispiel-Texte laden
+        async function loadExample(type) {
+            try {
+                const response = await fetch(`/api/example/${type}`);
+                const data = await response.json();
+                
+                if (data.text) {
+                    textInput.value = data.text;
+                    analyzeBtn.disabled = false;
+                    saveBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden des Beispiel-Texts:', error);
+            }
+        }
+
+        // Sentiment-Analyse
+        async function analyzeSentiment() {
+            const text = textInput.value.trim();
+            
+            if (text.length < 3) {
+                alert('{% if lang == "de" %}Text ist zu kurz. Mindestens 3 Zeichen erforderlich.{% elif lang == "fr" %}Le texte est trop court. Au moins 3 caractères requis.{% elif lang == "es" %}El texto es demasiado corto. Se requieren al menos 3 caracteres.{% else %}Text is too short. At least 3 characters required.{% endif %}');
+                return;
+            }
+
+            // UI States
+            analyzeBtn.disabled = true;
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            saveBtn.style.display = 'none';
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        text: text,
+                        use_bert: useBert,
+                        save: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                const processingTime = Date.now() - startTime;
+                currentAnalysis = result;
+                displayResults(result, processingTime);
+
+            } catch (error) {
+                console.error('Analyse-Fehler:', error);
+                alert(`{% if lang == "de" %}Fehler bei der Analyse:{% elif lang == "fr" %}Erreur lors de l'analyse:{% elif lang == "es" %}Error en el análisis:{% else %}Analysis error:{% endif %} ${error.message}`);
+            } finally {
+                loading.style.display = 'none';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        // Ergebnisse anzeigen
+        function displayResults(result, clientProcessingTime) {
+            // Hauptscore
+            const score = Math.round(result.sentiment_score * 100);
+            scoreText.textContent = `${score}%`;
+            
+            // Emoji basierend auf Sentiment
+            const emojis = {
+                'positive': '😊',
+                'negative': '😞',
+                'neutral': '😐',
+                'mixed': '🤔'
+            };
+            scoreEmoji.textContent = emojis[result.classification] || '🤔';
+            
+            // CSS Klassen
+            sentimentCircle.className = 'sentiment-circle';
+            classification.className = 'classification';
+            
+            const classType = result.classification;
+            sentimentCircle.classList.add(classType);
+            classification.classList.add(classType);
+
+            // Texte
+            classification.textContent = TRANSLATIONS[`sentiment_${classType}`] || classType;
+
+            // Confidence
+            const confidencePercent = Math.round(result.confidence * 100);
+            document.getElementById('confidenceFill').style.width = `${confidencePercent}%`;
+            document.getElementById('confidenceText').textContent = `${confidencePercent}%`;
+
+            // Detaillierte Scores
+            document.getElementById('positiveScore').textContent = `${Math.round(result.positive_score * 100)}%`;
+            document.getElementById('negativeScore').textContent = `${Math.round(result.negative_score * 100)}%`;
+            document.getElementById('neutralScore').textContent = `${Math.round(result.neutral_score * 100)}%`;
+            document.getElementById('compoundScore').textContent = result.compound_score.toFixed(3);
+
+            // Text-Details
+            document.getElementById('wordCount').textContent = result.word_count || '-';
+            document.getElementById('sentenceCount').textContent = result.sentence_count || '-';
+            document.getElementById('charCount').textContent = result.char_count || '-';
+            
+            const serverTime = result.processing_time ? Math.round(result.processing_time * 1000) : 0;
+            document.getElementById('processingTime').textContent = `${serverTime}ms`;
+
+            // Verwendete Methoden
+            const methodTags = document.getElementById('methodTags');
+            methodTags.innerHTML = '';
+            if (result.methods_used) {
+                result.methods_used.forEach(method => {
+                    const tag = document.createElement('span');
+                    tag.className = 'method-tag';
+                    tag.textContent = method;
+                    methodTags.appendChild(tag);
+                });
+            }
+
+            // Save Button anzeigen
+            saveBtn.style.display = 'inline-block';
+
+            // Ergebnisse anzeigen
+            results.style.display = 'block';
+        }
+
+        // Analyse speichern
+        async function saveAnalysis() {
+            if (!currentAnalysis) {
+                alert('Keine Analyse zum Speichern vorhanden');
+                return;
+            }
+
+            saveBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(currentAnalysis)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(TRANSLATIONS.saved_successfully);
+                    saveBtn.style.display = 'none';
+                    
+                    // Update Statistiken
+                    updateStatistics();
+                } else {
+                    throw new Error(result.error || 'Unbekannter Fehler');
+                }
+
+            } catch (error) {
+                console.error('Speicherfehler:', error);
+                alert(`{% if lang == "de" %}Fehler beim Speichern:{% elif lang == "fr" %}Erreur lors de la sauvegarde:{% elif lang == "es" %}Error al guardar:{% else %}Save error:{% endif %} ${error.message}`);
+            } finally {
+                saveBtn.disabled = false;
+            }
+        }
+
+        // Textsuche
+        async function searchTexts() {
+            const query = searchInput.value.trim();
+
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                displaySearchResults(data.results, data.query);
+
+            } catch (error) {
+                console.error('Suchfehler:', error);
+                alert(`{% if lang == "de" %}Suchfehler:{% elif lang == "fr" %}Erreur de recherche:{% elif lang == "es" %}Error de búsqueda:{% else %}Search error:{% endif %} ${error.message}`);
+            }
+        }
+
+        // Suchergebnisse anzeigen
+        function displaySearchResults(results, query) {
+            searchResults.innerHTML = '';
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="no-results">
+                        ${TRANSLATIONS.no_results}
+                    </div>
+                `;
+            } else {
+                results.forEach(result => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    
+                    const truncatedText = result.text.length > 200 ? 
+                        result.text.substring(0, 200) + '...' : 
+                        result.text;
+                    
+                    const date = new Date(result.created_at).toLocaleDateString();
+                    const score = Math.round(result.sentiment_score * 100);
+                    
+                    item.innerHTML = `
+                        <div class="result-text">${truncatedText}</div>
+                        <div class="result-meta">
+                            <span>${date}</span>
+                            <span class="result-sentiment ${result.classification}">
+                                ${TRANSLATIONS[`sentiment_${result.classification}`]} (${score}%)
+                            </span>
+                        </div>
+                    `;
+                    
+                    item.addEventListener('click', () => {
+                        textInput.value = result.text;
+                        analyzeBtn.disabled = false;
+                        saveBtn.style.display = 'none';
+                    });
+                    
+                    searchResults.appendChild(item);
+                });
+            }
+            
+            searchResults.style.display = 'block';
+        }
+
+        // Statistiken aktualisieren
+        async function updateStatistics() {
+            try {
+                const response = await fetch('/api/statistics');
+                const stats = await response.json();
+                
+                document.getElementById('totalAnalyses').textContent = stats.total_analyses || 0;
+                document.getElementById('avgSentiment').textContent = `${(stats.average_sentiment * 100).toFixed(1)}%`;
+                
+                const positiveCount = stats.sentiment_distribution?.positive || 0;
+                const totalCount = stats.total_analyses || 0;
+                const positivePct = totalCount > 0 ? Math.round((positiveCount / totalCount) * 100) : 0;
+                document.getElementById('positivePct').textContent = `${positivePct}%`;
+                
+            } catch (error) {
+                console.error('Statistik-Fehler:', error);
+            }
+        }
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            analyzeBtn.disabled = true;
+            loadPreferences();
+            
+            // Leere Suche für alle Ergebnisse
+            searchTexts();
+        });
+    </script>
+</body>
+</html>
